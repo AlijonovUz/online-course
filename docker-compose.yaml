@@ -1,0 +1,39 @@
+name: "rest-framework"
+
+services:
+  api:
+    build: .
+    volumes:
+      - .:/rest-framework
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=courses
+    volumes:
+      - courses:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 3
+      timeout: 5s
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  courses:
