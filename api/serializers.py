@@ -108,13 +108,19 @@ class RegisterSerializer(serializers.ModelSerializer):
     Eslatma: Hech qanday ma'lumotlarni o'zgartirmang! Validatorlardagi re.match patternlari
     validatorlarga kerakli ma'lumotni tekshirish uchun ishlatilgan. (O'zgartirilmasin)
     '''
-
     password1 = serializers.CharField(write_only=True, min_length=8, max_length=128)
     password2 = serializers.CharField(write_only=True, min_length=8, max_length=128)
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
+        extra_kwargs = {
+            'email': {
+                'required': True,
+                'allow_null': False,
+                'allow_blank': False
+            }
+        }
 
     def validate_username(self, value):
         if not re.match(r'^[a-zA-Z0-9_]+$', value):
